@@ -94,3 +94,6 @@ are, and _produce no error_ if they are not. Caveat computator.
 
 ### Compilation: 
 Run `build_mmx`. Type `help build_mmx` to read about compilation issues and options.
+
+### Performance:
+![performance comparison](./doc/mmx_web_01.png)
