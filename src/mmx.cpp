@@ -80,7 +80,7 @@ char MODIFY[2];
 // teval() is called by each thread
 // ================================
 #ifdef WIN_SYSTEM
-DWORD _stdcall teval(void* pn) 
+DWORD __stdcall teval(void* pn) 
 #else
 void* teval(void* pn) 
 #endif
