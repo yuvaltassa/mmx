@@ -86,42 +86,158 @@ void* teval(void* pn)
    int i, n = *(int*)pn;
    ptrdiff_t *Si;
    double *Ai, *Bi, *Wi;
+   double *Areali, *Breali;
+   double *Aimagi, *Bimagi;
 
 #ifdef WIN_SYSTEM
    while(1){ // thread will be terminated externally
       WaitForSingleObject(TSTART[n], INFINITE); // wait for start signal
 #endif
       // loop over data
-      for( i=SCHEDULE[n][0]; i<SCHEDULE[n][1]; i++ ){
-         // pointers to scheduled data
-         if (BSX){      //singleton expansion
-            Ai = A + strideA*PAIRS[2*i];
-            Bi = B + strideB*PAIRS[2*i+1];
-         } else {
-            Ai = A + strideA*i;
-            Bi = B + strideB*i;
-         }
-         // excecute the task
-         switch ( PARTASK ) {
-            case MATMUL:
-               mulMatMat(C + strideC*i, Ai, Bi , a1, a2, b1, b2, MODIFY);
-               //mexPrintf("%d strideC: %d A %f, B %f, C %f\n", i, strideC, Ai[0], Bi[0], *(C+strideC*i));
-               break;
-            case SQUARE:
-               squareMatMat(C + strideC*i, Ai, Bi , a1, a2, b1, b2, MODIFY);
-               break;
-            case CHOL:
-               chol(C + strideC*i, Ai, a1);
-               break;
-            case BSLASH:
-               if (iScratch != NULL && WORK != NULL) {
-                  Wi = WORK + strideW*i;
-                  Si = iScratch + a2*i;
-                  solve(C + strideC*i, Ai, Bi , a1, a2, b1, b2, MODIFY, Wi, strideW, Si);
-               }
-               break;               
-         }
-      }
+	if (A_is_complex) {
+		if (B_is_complex) {
+			// A and B are complex
+			for( i=SCHEDULE[n][0]; i<SCHEDULE[n][1]; i++ ){
+				// pointers to scheduled data
+				if (BSX){      //singleton expansion
+					Areali = Areal + strideA*PAIRS[2*i];
+					Aimagi = Aimag + strideA*PAIRS[2*i];
+					Breali = Breal + strideB*PAIRS[2*i+1];
+					Bimagi = Bimag + strideB*PAIRS[2*i+1];
+				} else {
+					Areali = Areal + strideA*i;
+					Aimagi = Aimag + strideA*i;
+					Breali = Breal + strideB*i;
+					Bimagi = Bimag + strideB*i;
+				}
+				// excecute the task
+				switch ( PARTASK ) {
+					case MATMUL:
+						mulCC(Creal + strideC*i, Cimag + strideC*i, Areali, Aimagi, Breali, Bimagi , a1, a2, b1, b2, MODIFY);
+						//mexPrintf("%d strideC: %d A %f, B %f, C %f\n", i, strideC, Ai[0], Bi[0], *(C+strideC*i));
+						break;
+					case SQUARE:
+						squareCC(Creal + strideC*i, Cimag + strideC*i, Areali, Aimagi, Breali, Bimagi , a1, a2, b1, b2, MODIFY);
+						break;
+					case CHOL:
+						cholC(Creal + strideC*i,Cimag + strideC*i, Areali , Aimagi , a1);
+						break;
+					case BSLASH:
+						if (iScratch != NULL && WORK != NULL) {
+							//TODO: Wi and Si might need real and imaginary parts
+							Wi = WORK + strideW*i;
+							Si = iScratch + a2*i;
+							solveCC(Creal + strideC*i,Cimag + strideC*i, Areali,Aimagi, Breali, Bimagi , a1, a2, b1, b2, MODIFY, Wi, strideW, Si);
+						}
+						break;               
+				}
+			}
+		} else {
+			// A is complex, B is real
+			for( i=SCHEDULE[n][0]; i<SCHEDULE[n][1]; i++ ){
+				// pointers to scheduled data
+				if (BSX){      //singleton expansion
+					Areali = Areal + strideA*PAIRS[2*i];
+					Aimagi = Aimag + strideA*PAIRS[2*i];
+					Breali = Breal + strideB*PAIRS[2*i+1];
+				} else {
+					Areali = Areal + strideA*i;
+					Aimagi = Aimag + strideA*i;
+					Breali = Breal + strideB*i;
+				}
+				// excecute the task
+				switch ( PARTASK ) {
+					case MATMUL:
+						mulCR(Creal + strideC*i, Cimag + strideC*i, Areali, Aimagi, Breali , a1, a2, b1, b2, MODIFY);
+						//mexPrintf("%d strideC: %d A %f, B %f, C %f\n", i, strideC, Ai[0], Bi[0], *(C+strideC*i));
+						break;
+					case SQUARE:
+						squareCR(Creal + strideC*i, Cimag + strideC*i, Areali, Aimagi, Breali , a1, a2, b1, b2, MODIFY);
+						break;
+					case CHOL:
+						cholC(Creal + strideC*i,Cimag + strideC*i, Areali , Aimagi , a1);
+						break;
+					case BSLASH:
+						if (iScratch != NULL && WORK != NULL) {
+							//TODO: Wi and Si might need real and imaginary parts
+							Wi = WORK + strideW*i;
+							Si = iScratch + a2*i;
+							solveCR(Creal + strideC*i,Cimag + strideC*i, Areali,Aimagi, Breali , a1, a2, b1, b2, MODIFY, Wi, strideW, Si);
+						}
+						break;               
+				}
+			}
+		}
+	} else {
+		if (B_is_complex) {
+			// A is real, B is complex
+			for( i=SCHEDULE[n][0]; i<SCHEDULE[n][1]; i++ ){
+				// pointers to scheduled data
+				if (BSX){      //singleton expansion
+					Areali = Areal + strideA*PAIRS[2*i];
+					Breali = Breal + strideB*PAIRS[2*i+1];
+					Bimagi = Bimag + strideB*PAIRS[2*i+1];
+				} else {
+					Areali = Areal + strideA*i;
+					Breali = Breal + strideB*i;
+					Bimagi = Bimag + strideB*i;
+				}
+				// excecute the task
+				switch ( PARTASK ) {
+					case MATMUL:
+						mulRC(Creal + strideC*i, Cimag + strideC*i, Areali, Breali, Bimagi , a1, a2, b1, b2, MODIFY);
+						//mexPrintf("%d strideC: %d A %f, B %f, C %f\n", i, strideC, Ai[0], Bi[0], *(C+strideC*i));
+						break;
+					case SQUARE:
+						squareRC(Creal + strideC*i, Cimag + strideC*i, Areali, Breali, Bimagi , a1, a2, b1, b2, MODIFY);
+						break;
+					case CHOL:
+						cholR(Creal + strideC*i, Areali , a1);
+						break;
+					case BSLASH:
+						if (iScratch != NULL && WORK != NULL) {
+							//TODO: Wi and Si might need real and imaginary parts
+							Wi = WORK + strideW*i;
+							Si = iScratch + a2*i;
+							solveRC(Creal + strideC*i,Cimag + strideC*i, Areali,Aimagi, Breali, Bimagi , a1, a2, b1, b2, MODIFY, Wi, strideW, Si);
+						}
+						break;               
+				}
+			}
+		} else {
+			// A is real, B is real	
+			for( i=SCHEDULE[n][0]; i<SCHEDULE[n][1]; i++ ){
+				// pointers to scheduled data
+				if (BSX){      //singleton expansion
+					Areali = Areal + strideA*PAIRS[2*i];
+					Breali = Breal + strideB*PAIRS[2*i+1];
+				} else {
+					Areali = Areal + strideA*i;
+					Breali = Breal + strideB*i;
+				}
+				// excecute the task
+				switch ( PARTASK ) {
+					case MATMUL:
+						mulRMatRMat(Creal + strideC*i, Areali, Breali , a1, a2, b1, b2, MODIFY);
+						//mexPrintf("%d strideC: %d A %f, B %f, C %f\n", i, strideC, Ai[0], Bi[0], *(C+strideC*i));
+						break;
+					case SQUARE:
+						squareRMatRMat(Creal + strideC*i, Areali, Breali , a1, a2, b1, b2, MODIFY);
+						break;
+					case CHOL:
+						cholR(Creal + strideC*i, Areali, a1);
+						break;
+					case BSLASH:
+						if (iScratch != NULL && WORK != NULL) {
+							Wi = WORK + strideW*i;
+							Si = iScratch + a2*i;
+							solveRR(Creal + strideC*i, Areali, Breali , a1, a2, b1, b2, MODIFY, Wi, strideW, Si);
+						}
+						break;               
+				}
+			}
+		}
+	}
 #ifdef WIN_SYSTEM
       //signal that thread is finished
       SetEvent(TDONE[n]);
