@@ -400,6 +400,26 @@ void mexFunction(int n_out, mxArray *p_out[], int n_in, const mxArray *p_in[])
    b1    = Bdims[0];
    b2    = Bdims[1]; 
 
+   
+   // check the operation we are performing and throw an error when it doesn't exist for complex matrices
+   switch ( PARTASK ) {
+      case MATMUL:
+         break;
+      case SQUARE:
+         if (A_is_complex || B_is_complex)
+            mexErrMsgTxt("Complex matrix support is not implemented for square");
+         break;
+      case CHOL:
+         if (A_is_complex || B_is_complex)
+            mexErrMsgTxt("Complex matrix support is not implemented for chol");
+         break;
+      case BSLASH:
+         if (A_is_complex || B_is_complex)
+            mexErrMsgTxt("Complex matrix support is not implemented for bslash");
+         break;
+   }
+   
+   
    // modifiers
    MODIFY[0] = MODIFY[1] = 'N';
    if( n_in > 3 ){
