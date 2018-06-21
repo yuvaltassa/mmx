@@ -623,3 +623,27 @@ void solveRR(	double* C,
    }
 #endif
 }
+
+void solveCR(	double* Creal, double* Cimag, 
+				double* Areal, double* Aimag, 
+				double* Breal,
+				const int a1, const int a2, 
+				const int b1, const int b2, 
+				const char *mod, double *W, const int LW, ptrdiff_t *S) {
+}
+
+void solveRC(	double* Creal, double* Cimag, 
+				double* Areal,
+				double* Breal, double* Bimag,
+				const int a1, const int a2, 
+				const int b1, const int b2, 
+				const char *mod, double *W, const int LW, ptrdiff_t *S) {
+}
+
+void solveCC(	double* Creal, double* Cimag, 
+				double* Areal, double* Aimag, 
+				double* Breal, double* Bimag,
+				const int a1, const int a2, 
+				const int b1, const int b2, 
+				const char *mod, double *W, const int LW, ptrdiff_t *S) {
+}
