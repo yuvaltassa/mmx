@@ -456,8 +456,40 @@ void mulRR(	double* C,
 // ================================================
 // square:   C = A * op(A)  or  C = 0.5*(A*B'+B*A')
 // ================================================
-void squareMatMat(double* C, double* A, double* B,
-				   const int a1, const int a2, const int b1, const int b2, const char *mod) {
+void squareCC(	double* Creal, double* Cimag, 
+				double* Areal, double* Aimag, 
+				double* Breal, double* Bimag, 
+				const int a1, const int a2, 
+				const int b1, const int b2, 
+				const char *mod) {
+					
+				}
+				
+void squareCR(	double* Creal, double* Cimag, 
+				double* Areal, double* Aimag, 
+				double* Breal,
+				const int a1, const int a2, 
+				const int b1, const int b2, 
+				const char *mod) {
+					
+				}
+				
+void squareRC(	double* Creal, double* Cimag, 
+				double* Areal, 
+				double* Breal, double* Bimag, 
+				const int a1, const int a2, 
+				const int b1, const int b2, 
+				const char *mod) {
+					
+				}
+
+
+void squareRR(	double* C, 
+				double* A, 
+				double* B,
+				const int a1, const int a2, 
+				const int b1, const int b2, 
+				const char *mod) {
    // can't pass consts to BLAS
    ptrdiff_t a10 = a1, a20 = a2, b10 = b1; 
    // rows(Op(A)), columns(Op(A)), columns(Op(B)), rows(C)
