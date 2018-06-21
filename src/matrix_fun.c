@@ -339,7 +339,7 @@ void mulCC(	double* Cr, double* Ci,
 			const int rA, const int cA, 
 			const int rB, const int cB, 
 			const char *mod) {
-#ifndef USE_BLAS				
+//#ifndef USE_BLAS				
 	if ( (mod[0] == 'N') && (mod[1] == 'N') )
 		multCC(Cr,Ci,Ar,Ai,Br,Bi,rA, cA, cB);
 	else if ( (mod[0] == 'T') && (mod[1] == 'N') )
@@ -348,9 +348,9 @@ void mulCC(	double* Cr, double* Ci,
 		multCCt(Cr,Ci,Ar,Ai,Br,Bi,rA, cA, cB);
 	else if ( (mod[0] == 'T') && (mod[1] == 'T') )
 		multCtCt(Cr,Ci,Ar,Ai,Br,Bi,rA, cA, cB);
-#else
+//#else
 	//TODO: Complex BLAs call
-#endif	
+//#endif	
 }
 
 void mulCR(	double* Cr, double* Ci,
@@ -359,7 +359,7 @@ void mulCR(	double* Cr, double* Ci,
 			const int rA, const int cA, 
 			const int rB, const int cB, 
 			const char *mod) {
-#ifndef USE_BLAS				
+//#ifndef USE_BLAS				
 	if ( (mod[0] == 'N') && (mod[1] == 'N') )
 		multCR(Cr,Ci,Ar,Ai,Br,rA, cA, cB);
 	else if ( (mod[0] == 'T') && (mod[1] == 'N') )
@@ -368,9 +368,9 @@ void mulCR(	double* Cr, double* Ci,
 		multCRt(Cr,Ci,Ar,Ai,Br,rA, cA, cB);
 	else if ( (mod[0] == 'T') && (mod[1] == 'T') )
 		multCtRt(Cr,Ci,Ar,Ai,Br,rA, cA, cB);
-#else
+//#else
 	//TODO: Complex BLAs call
-#endif					
+//#endif					
 }
 
 void mulRC(	double* Cr, double* Ci,
@@ -379,7 +379,7 @@ void mulRC(	double* Cr, double* Ci,
 			const int rA, const int cA, 
 			const int rB, const int cB, 
 			const char *mod) {
-#ifndef USE_BLAS				
+//#ifndef USE_BLAS				
 	if ( (mod[0] == 'N') && (mod[1] == 'N') )
 		multRC(Cr,Ci,Ar,Br,Bi,rA, cA, cB);
 	else if ( (mod[0] == 'T') && (mod[1] == 'N') )
@@ -388,9 +388,9 @@ void mulRC(	double* Cr, double* Ci,
 		multRCt(Cr,Ci,Ar,Br,Bi,rA, cA, cB);
 	else if ( (mod[0] == 'T') && (mod[1] == 'T') )
 		multRtCt(Cr,Ci,Ar,Br,Bi,rA, cA, cB);
-#else
+//#else
 	//TODO: Complex BLAs call
-#endif		
+//#endif		
 }
 
 void mulRR(	double* C, 
