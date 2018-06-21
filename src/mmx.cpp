@@ -116,8 +116,8 @@ void* teval(void* pn)
 				// excecute the task
 				switch ( PARTASK ) {
 					case MATMUL:
-						mulCC(Creal + strideC*i, Cimag + strideC*i, Areali, Aimagi, Breali, Bimagi , a1, a2, b1, b2, MODIFY);
-						//mexPrintf("%d strideC: %d A %f, B %f, C %f\n", i, strideC, Ai[0], Bi[0], *(C+strideC*i));
+						//mexPrintf("CxC %d strideC: %d A %f, B %f, C %f\n", i, strideC, Areali[0], Breali[0], *(Creal+strideC*i));
+                        mulCC(Creal + strideC*i, Cimag + strideC*i, Areali, Aimagi, Breali, Bimagi , a1, a2, b1, b2, MODIFY);
 						break;
 					case SQUARE:
 						squareCC(Creal + strideC*i, Cimag + strideC*i, Areali, Aimagi, Breali, Bimagi , a1, a2, b1, b2, MODIFY);
@@ -151,8 +151,8 @@ void* teval(void* pn)
 				// excecute the task
 				switch ( PARTASK ) {
 					case MATMUL:
+                        //mexPrintf("CxR %d strideC: %d A %f, B %f, C %f\n", i, strideC, Areali[0], Breali[0], *(Creal+strideC*i));
 						mulCR(Creal + strideC*i, Cimag + strideC*i, Areali, Aimagi, Breali , a1, a2, b1, b2, MODIFY);
-						//mexPrintf("%d strideC: %d A %f, B %f, C %f\n", i, strideC, Ai[0], Bi[0], *(C+strideC*i));
 						break;
 					case SQUARE:
 						squareCR(Creal + strideC*i, Cimag + strideC*i, Areali, Aimagi, Breali , a1, a2, b1, b2, MODIFY);
@@ -188,8 +188,8 @@ void* teval(void* pn)
 				// excecute the task
 				switch ( PARTASK ) {
 					case MATMUL:
+                        //mexPrintf("RxC %d strideC: %d A %f, B %f, C %f\n", i, strideC, Areali[0], Breali[0], *(Creal+strideC*i));
 						mulRC(Creal + strideC*i, Cimag + strideC*i, Areali, Breali, Bimagi , a1, a2, b1, b2, MODIFY);
-						//mexPrintf("%d strideC: %d A %f, B %f, C %f\n", i, strideC, Ai[0], Bi[0], *(C+strideC*i));
 						break;
 					case SQUARE:
 						squareRC(Creal + strideC*i, Cimag + strideC*i, Areali, Breali, Bimagi , a1, a2, b1, b2, MODIFY);
