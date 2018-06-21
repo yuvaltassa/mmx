@@ -618,7 +618,7 @@ void mexFunction(int n_out, mxArray *p_out[], int n_in, const mxArray *p_in[])
                ptrdiff_t info, m_one=-1;
                ptrdiff_t a10 = a1, b20 = b2, a20=a2;
                ptrdiff_t b10= (a1>a2) ? a1 : a2;  
-               dgelsy(&a10, &a20, &b20, A, &a10, B, &b10,
+               dgelsy(&a10, &a20, &b20, Areal, &a10, Breal, &b10,
                      iScratch, &rcond, &rank, 
                      worksize, &m_one, &info);
 
@@ -635,7 +635,7 @@ void mexFunction(int n_out, mxArray *p_out[], int n_in, const mxArray *p_in[])
 #endif
                // duplicate A so it doesn't get corrupted
                tArray   = mxDuplicateArray(p_in[1]);
-               A        = mxGetPr(tArray);
+               Areal    = mxGetPr(tArray);
             }
       }  
    }   
@@ -717,7 +717,7 @@ void mexFunction(int n_out, mxArray *p_out[], int n_in, const mxArray *p_in[])
             iC    = i*strideC+j*c1;
             iC2   = i*strideC2+j*c12;
             for( k=0; k<c12; k++ ) {
-               C2[iC2+k] = C[iC+k];
+               C2[iC2+k] = Creal[iC+k];
             }
          }
       }
