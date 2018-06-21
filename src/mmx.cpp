@@ -221,11 +221,11 @@ void* teval(void* pn)
 				// excecute the task
 				switch ( PARTASK ) {
 					case MATMUL:
-						mulRMatRMat(Creal + strideC*i, Areali, Breali , a1, a2, b1, b2, MODIFY);
 						//mexPrintf("%d strideC: %d A %f, B %f, C %f\n", i, strideC, Ai[0], Bi[0], *(C+strideC*i));
+                        mulRR(Creal + strideC*i, Areali, Breali , a1, a2, b1, b2, MODIFY);
 						break;
 					case SQUARE:
-						squareRMatRMat(Creal + strideC*i, Areali, Breali , a1, a2, b1, b2, MODIFY);
+						squareRR(Creal + strideC*i, Areali, Breali , a1, a2, b1, b2, MODIFY);
 						break;
 					case CHOL:
 						cholR(Creal + strideC*i, Areali, a1);
