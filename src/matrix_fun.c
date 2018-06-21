@@ -551,7 +551,7 @@ int cholA(double* A, double* scratch, const int n)
 
 
 
-void chol(double* C, double* A,  const int a1) {
+void cholR(double* C, double* A,  const int a1) {
    int i,j;
 
    // copy upper triangle into C
@@ -575,12 +575,21 @@ void chol(double* C, double* A,  const int a1) {
 #endif
 }
 
+void cholC(	double* Creal, double* Cimag,
+			double* Areal, double* Aimag,
+			const int a1) {
+	
+}
+
 
 // ================================
 // solve linear equations   C = A\B
 // ================================
-void solve(double* C, double* A, double* B,
-				   const int a1, const int a2, const int b1, const int b2, 
+void solveRR(	double* C, 
+				double* A, 
+				double* B,
+				const int a1, const int a2, 
+				const int b1, const int b2, 
                const char *mod, double *W, const int LW, ptrdiff_t *S) {
 #ifdef USE_BLAS
    int i, j, rank;
