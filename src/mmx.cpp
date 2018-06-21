@@ -202,7 +202,7 @@ void* teval(void* pn)
 							//TODO: Wi and Si might need real and imaginary parts
 							Wi = WORK + strideW*i;
 							Si = iScratch + a2*i;
-							solveRC(Creal + strideC*i,Cimag + strideC*i, Areali,Aimagi, Breali, Bimagi , a1, a2, b1, b2, MODIFY, Wi, strideW, Si);
+							solveRC(Creal + strideC*i,Cimag + strideC*i, Areali, Breali, Bimagi , a1, a2, b1, b2, MODIFY, Wi, strideW, Si);
 						}
 						break;               
 				}
