@@ -332,19 +332,84 @@ void multAsB(double* C, double* A, double* B, const int a1, const int a2, const 
 // =============================
 // multiply:   C = op(A) * op(B)
 // =============================
-void mulMatMat(double* C, double* A, double* B,
-				   const int a1, const int a2, const int b1, const int b2, const char *mod) {
+
+void mulCC(	double* Cr, double* Ci,
+			double* Ar, double* Ai,
+			double* Br, double* Bi,
+			const int rA, const int cA, 
+			const int rB, const int cB, 
+			const char *mod) {
+#ifndef USE_BLAS				
+	if ( (mod[0] == 'N') && (mod[1] == 'N') )
+		multCC(Cr,Ci,Ar,Ai,Br,Bi,rA, cA, cB);
+	else if ( (mod[0] == 'T') && (mod[1] == 'N') )
+		multCtC(Cr,Ci,Ar,Ai,Br,Bi,rA, cA, cB);
+	else if ( (mod[0] == 'N') && (mod[1] == 'T') )
+		multCCt(Cr,Ci,Ar,Ai,Br,Bi,rA, cA, cB);
+	else if ( (mod[0] == 'T') && (mod[1] == 'T') )
+		multCtCt(Cr,Ci,Ar,Ai,Br,Bi,rA, cA, cB);
+#else
+	//TODO: Complex BLAs call
+#endif	
+}
+
+void mulCR(	double* Cr, double* Ci,
+			double* Ar, double* Ai,
+			double* Br,
+			const int rA, const int cA, 
+			const int rB, const int cB, 
+			const char *mod) {
+#ifndef USE_BLAS				
+	if ( (mod[0] == 'N') && (mod[1] == 'N') )
+		multCR(Cr,Ci,Ar,Ai,Br,rA, cA, cB);
+	else if ( (mod[0] == 'T') && (mod[1] == 'N') )
+		multCtR(Cr,Ci,Ar,Ai,Br,rA, cA, cB);
+	else if ( (mod[0] == 'N') && (mod[1] == 'T') )
+		multCRt(Cr,Ci,Ar,Ai,Br,rA, cA, cB);
+	else if ( (mod[0] == 'T') && (mod[1] == 'T') )
+		multCtRt(Cr,Ci,Ar,Ai,Br,rA, cA, cB);
+#else
+	//TODO: Complex BLAs call
+#endif					
+}
+
+void mulRC(	double* Cr, double* Ci,
+			double* Ar,
+			double* Br, double* Bi,
+			const int rA, const int cA, 
+			const int rB, const int cB, 
+			const char *mod) {
+#ifndef USE_BLAS				
+	if ( (mod[0] == 'N') && (mod[1] == 'N') )
+		multRC(Cr,Ci,Ar,Br,Bi,rA, cA, cB);
+	else if ( (mod[0] == 'T') && (mod[1] == 'N') )
+		multRtC(Cr,Ci,Ar,Br,Bi,rA, cA, cB);
+	else if ( (mod[0] == 'N') && (mod[1] == 'T') )
+		multRCt(Cr,Ci,Ar,Br,Bi,rA, cA, cB);
+	else if ( (mod[0] == 'T') && (mod[1] == 'T') )
+		multRtCt(Cr,Ci,Ar,Br,Bi,rA, cA, cB);
+#else
+	//TODO: Complex BLAs call
+#endif		
+}
+
+void mulRR(	double* C, 
+			double* A, 
+			double* B,
+			const int a1, const int a2, 
+			const int b1, const int b2, 
+			const char *mod) {
 #ifndef USE_BLAS // naive C implementations, including "half-sparse"
 
    if ((mod[0] != 'S') && (mod[1] != 'S')){
       if ( (mod[0] == 'N') && (mod[1] == 'N') )
-         multAB(C, A, B,a1, a2, b2);
+         multRR(C, A, B,a1, a2, b2);
       else if ( (mod[0] == 'T') && (mod[1] == 'N') )
-         multAtB(C, A, B, a1, a2, b2);
+         multRtR(C, A, B, a1, a2, b2);
       else if ( (mod[0] == 'N') && (mod[1] == 'T') )
-         multABt(C, A, B, a1, a2, b1);
+         multRRt(C, A, B, a1, a2, b1);
       else if ( (mod[0] == 'T') && (mod[1] == 'T') )
-         multAtBt(C, A, B, a1, a2, b1);
+         multRtRt(C, A, B, a1, a2, b1);
    } else {  
       if (mod[0] == 'S')
          multAsB(C, A, B, a1, a2, b2);
