@@ -65,7 +65,10 @@ static HANDLE  TDONE[MAX_THREAD];
 
 // computation related
 int   PARTASK;
-double *A, *B, *C, *WORK, *C2;
+double *Areal, *Breal, *Creal; 
+double *Aimag, *Bimag, *Cimag;
+bool A_is_complex,B_is_complex;
+double *WORK, *C2;
 int a1, a2, b1 ,b2, c1, c2, strideA, strideB, strideC, strideW, strideC2;
 int *PAIRS = NULL;
 ptrdiff_t *iScratch = NULL;
@@ -377,13 +380,21 @@ void mexFunction(int n_out, mxArray *p_out[], int n_in, const mxArray *p_in[])
    }
 
    // get a1, a2, b1, b2
-   A     = mxGetPr(p_in[1]);
+   A_is_complex = mxIsComplex(p_in[1]);
+   Areal     = mxGetPr(p_in[1]);
+   if (A_is_complex){
+		Aimag = mxGetPi(p_in[1]);
+	}
    Andim = mxGetNumberOfDimensions(p_in[1]);
    Adims = (mwSize *) mxGetDimensions(p_in[1]);
    a1    = Adims[0];
    a2    = Adims[1];    
-
+	
+	B_is_complex = mxIsComplex(p_in[2]);
    B     = mxGetPr(p_in[2]);
+   if (B_is_complex){
+		Bimag = mxGetPi(p_in[1]);
+	}
    Bndim = mxGetNumberOfDimensions(p_in[2]);
    Bdims = (mwSize *) mxGetDimensions(p_in[2]);
    b1    = Bdims[0];
@@ -612,15 +623,22 @@ void mexFunction(int n_out, mxArray *p_out[], int n_in, const mxArray *p_in[])
 #endif
 
 
-   // allocate C
-   if ((PARTASK == BSLASH) && (a1==c1)) {// initialize C=B for in-place square BACKSLASH
-      p_out[0] = mxDuplicateArray(p_in[2]);
-   }
-   else {
-      p_out[0] = mxCreateNumericArray(Cndim, Cdims, mxDOUBLE_CLASS, mxREAL);
-   }
-   n_out = 1;
-   C  = mxGetPr(p_out[0]);
+	// allocate C
+	if ((PARTASK == BSLASH) && (a1==c1)) {// initialize C=B for in-place square BACKSLASH
+		p_out[0] = mxDuplicateArray(p_in[2]);
+		Creal  = mxGetPr(p_out[0]);
+	} else {
+		if (A_is_complex||B_is_complex){
+			p_out[0] = mxCreateNumericArray(Cndim, Cdims, mxDOUBLE_CLASS, mxCOMPLEX);
+			Creal  = mxGetPr(p_out[0]);
+			Cimag  = mxGetPi(p_out[0]);
+		} else {
+			p_out[0] = mxCreateNumericArray(Cndim, Cdims, mxDOUBLE_CLASS, mxREAL);
+			Creal  = mxGetPr(p_out[0]);
+		}
+	}
+	n_out = 1;
+   
 
    // ==================================
    // make schedule, run threads, finish
