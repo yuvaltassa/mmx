@@ -381,25 +381,24 @@ void mexFunction(int n_out, mxArray *p_out[], int n_in, const mxArray *p_in[])
 
    // get a1, a2, b1, b2
    A_is_complex = mxIsComplex(p_in[1]);
-   Areal     = mxGetPr(p_in[1]);
+   Areal = mxGetPr(p_in[1]);
    if (A_is_complex){
-		Aimag = mxGetPi(p_in[1]);
-	}
+      Aimag = mxGetPi(p_in[1]);
+   }
    Andim = mxGetNumberOfDimensions(p_in[1]);
    Adims = (mwSize *) mxGetDimensions(p_in[1]);
    a1    = Adims[0];
    a2    = Adims[1];    
 	
-	B_is_complex = mxIsComplex(p_in[2]);
-   B     = mxGetPr(p_in[2]);
+   B_is_complex = mxIsComplex(p_in[2]);
+   Breal = mxGetPr(p_in[2]);
    if (B_is_complex){
-		Bimag = mxGetPi(p_in[1]);
-	}
+      Bimag = mxGetPi(p_in[2]);
+   }
    Bndim = mxGetNumberOfDimensions(p_in[2]);
    Bdims = (mwSize *) mxGetDimensions(p_in[2]);
    b1    = Bdims[0];
-   b2    = Bdims[1]; 
-
+   b2    = Bdims[1];
    
    // check the operation we are performing and throw an error when it doesn't exist for complex matrices
    switch ( PARTASK ) {
