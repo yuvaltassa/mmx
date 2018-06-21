@@ -508,14 +508,14 @@ void squareRR(	double* C,
 
    if ((b1 == 0) || (b2 == 0)){  // one input  C = A*A'   
       if ( (mod[0] == 'N') )
-         multABt(C, A, A, a1, a2, a1);
+         multRRt(C, A, A, a1, a2, a1);
       else
-         multAtB(C, A, A, a1, a2, a2);
+         multRtR(C, A, A, a1, a2, a2);
    }else{
       if ( (mod[0] == 'N') )
-         multABt(C, A, B, a1, a2, b1);
+         multRRt(C, A, B, a1, a2, b1);
       else
-         multAtB(C, A, B, a1, a2, b2);
+         multRtR(C, A, B, a1, a2, b2);
 
       double temp;
       // symmetrize
