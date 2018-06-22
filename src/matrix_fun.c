@@ -1,24 +1,289 @@
-// ==================================================
-// straightforward implementations of matrix multiply
-// ==================================================
-void multAB(double* C, double* A, double* B, const int a1, const int a2, const int b2) {
+// ========================================================================
+// straightforward implementations of matrix multiply Complex times Complex
+// ========================================================================
+void multCC(double* Cr, double* Ci, double* Ar,double* Ai, double* Br, double* Bi, const int rA, const int cA, const int cB) {
    int i, j, k;
-   double *a, *c, tmp;  
-   for( i=0; i<b2; i++ ){
-      for( k=0; k<a2; k++ ){
-         tmp = B[i*a2+k];
-         a   = A + k*a1;
-         c   = C + i*a1;
-         for( j=0; j<a1; j++ ){
-            c[j] += tmp * a[j];
+   double *ar,*cr,tmpr;
+   double *ai,*ci,tmpi;
+   for( i=0; i<cB; i++ ){
+      cr   = Cr + i*rA;
+        ci   = Ci + i*rA;
+      for( k=0; k<cA; k++ ){
+         tmpr = Br[i*cA+k];
+         tmpi = Bi[i*cA+k];
+         ar   = Ar + k*rA;
+         ai   = Ai + k*rA;
+         for( j=0; j<rA; j++ ){
+            cr[j] += tmpr * ar[j] - tmpi * ai[j];
+            ci[j] += tmpi * ar[j] + tmpr * ai[j];
          }
       }
    }   
 }
+void multCtC(double* Cr, double* Ci, double* Ar,double* Ai, double* Br, double* Bi, const int rA, const int cA, const int cB) {
+   int i, j, k;
+   double *ar, *bi, *cr;  
+   double *ai, *br, *ci;  
+   for( i=0; i<cB; i++ ){
+      br = Br + i*rA;
+      bi = Bi + i*rA;
+      for( k=0; k<cA; k++ ){
+         ar = Ar + k*rA;
+         ai = Ai + k*rA;
+         cr = Cr + i*cA + k;
+         ci = Ci + i*cA + k;
+         for( j=0; j<rA; j++ ){
+            (*cr) += ar[j]*br[j] - ai[j]*bi[j];
+            (*ci) += ai[j]*br[j] + ar[j]*bi[j];
+         }
+      }
+   }
+}
+void multCCt(double* Cr, double* Ci, double* Ar,double* Ai, double* Br, double* Bi, const int rA, const int cA, const int rB) {
+   int i, j, k;
+   double *ar, *br;
+   double *ai, *bi;
+   for( j=0; j<cA; j++ ){
+      ar = Ar + j*rA;
+      ai = Ai + j*rA;
+      br = Br + j*rB;
+      bi = Bi + j*rB;      
+      for( i=0; i<rB; i++ ){
+         for( k=0; k<rA; k++ ){
+            Cr[i*rA + k] += ar[k]*br[i] - ai[k]*bi[i];
+            Ci[i*rA + k] += ai[k]*br[i] + ar[k]*bi[i];
+         }
+      }
+   }
+}
+void multCtCt(double* Cr, double* Ci, double* Ar,double* Ai, double* Br, double* Bi, const int rA, const int cA, const int rB) {
+   int i, j, k;
+   double *br, *cr, tmpr;  
+   double *bi, *ci, tmpi;  
+   for( i=0; i<cA; i++ ){
+      cr   = Cr + i;
+      ci   = Ci + i;
+      for( k=0; k<rA; k++ ){
+         tmpr = Ar[i*rA+k];
+         tmpi = Ai[i*rA+k];
+         br   = Br + k*rB;
+         bi   = Bi + k*rB;
+         for( j=0; j<rB; j++ ){
+            cr[j*cA] += tmpr * br[j] - tmpi * bi[j];
+            ci[j*cA] += tmpi * br[j] + tmpr * bi[j];
+         }
+      }
+   }
+}
+// ========================================================================
+// straightforward implementations of matrix multiply Complex times Real
+// ========================================================================
+void multCR(double* Cr, double* Ci, double* Ar,double* Ai, double* Br, const int rA, const int cA, const int cB) {
+   int i, j, k;
+   double *ar,*cr,tmpr;
+   double *ai,*ci;
+   for( i=0; i<cB; i++ ){
+      cr   = Cr + i*rA;
+        ci   = Ci + i*rA;
+      for( k=0; k<cA; k++ ){
+         tmpr = Br[i*cA+k];
+         ar   = Ar + k*rA;
+         ai   = Ai + k*rA;
+         for( j=0; j<rA; j++ ){
+            cr[j] += tmpr * ar[j];
+            ci[j] += tmpr * ai[j];
+         }
+      }
+   }   
+}
+void multCtR(double* Cr, double* Ci, double* Ar,double* Ai, double* Br, const int rA, const int cA, const int cB) {
+   int i, j, k;
+   double *ar, *br, *cr;  
+   double *ai,      *ci;  
+   for( i=0; i<cB; i++ ){
+      br = Br + i*rA;
+      for( k=0; k<cA; k++ ){
+         ar = Ar + k*rA;
+         ai = Ai + k*rA;
+         cr = Cr + i*cA + k;
+         ci = Ci + i*cA + k;
+         for( j=0; j<rA; j++ ){
+            (*cr) += ar[j]*br[j];
+            (*ci) += ai[j]*br[j];
+         }
+      }
+   }
+}
+void multCRt(double* Cr, double* Ci, double* Ar,double* Ai, double* Br, const int rA, const int cA, const int rB) {
+   int i, j, k;
+   double *ar, *br;
+   double *ai;
+   for( j=0; j<cA; j++ ){
+      ar = Ar + j*rA;
+      ai = Ai + j*rA;
+      br = Br + j*rB;
+      for( i=0; i<rB; i++ ){
+         for( k=0; k<rA; k++ ){
+            Cr[i*rA + k] += ar[k]*br[i];
+            Ci[i*rA + k] += ai[k]*br[i];
+         }
+      }
+   }
+}
+void multCtRt(double* Cr, double* Ci, double* Ar,double* Ai, double* Br, const int rA, const int cA, const int rB) {
+   int i, j, k;
+   double *br, *cr, tmpr;  
+   double      *ci, tmpi;  
+   for( i=0; i<cA; i++ ){
+      cr   = Cr + i;
+      ci   = Ci + i;
+      for( k=0; k<rA; k++ ){
+         tmpr = Ar[i*rA+k];
+         tmpi = Ai[i*rA+k];
+         br   = Br + k*rB;
+         for( j=0; j<rB; j++ ){
+            cr[j*cA] += tmpr * br[j];
+            ci[j*cA] += tmpi * br[j];
+         }
+      }
+   }
+}
+// ========================================================================
+// straightforward implementations of matrix multiply Real times Complex
+// ========================================================================
+void multRC(double* Cr, double* Ci, double* Ar, double* Br, double* Bi, const int rA, const int cA, const int cB) {
+   int i, j, k;
+   double *ar,*cr,tmpr;
+   double     *ci,tmpi;
+   for( i=0; i<cB; i++ ){
+      cr   = Cr + i*rA;
+        ci   = Ci + i*rA;
+      for( k=0; k<cA; k++ ){
+         tmpr = Br[i*cA+k];
+         tmpi = Bi[i*cA+k];
+         ar   = Ar + k*rA;
+         for( j=0; j<rA; j++ ){
+            cr[j] += tmpr * ar[j];
+            ci[j] += tmpi * ar[j];
+         }
+      }
+   }   
+}
+void multRtC(double* Cr, double* Ci, double* Ar, double* Br, double* Bi, const int rA, const int cA, const int cB) {
+   int i, j, k;
+   double *ar, *bi, *cr;  
+   double      *br, *ci;  
+   for( i=0; i<cB; i++ ){
+      br = Br + i*rA;
+      bi = Bi + i*rA;
+      for( k=0; k<cA; k++ ){
+         ar = Ar + k*rA;
+         cr = Cr + i*cA + k;
+         ci = Ci + i*cA + k;
+         for( j=0; j<rA; j++ ){
+            (*cr) += ar[j]*br[j];
+            (*ci) += ar[j]*bi[j];
+         }
+      }
+   }
+}
+void multRCt(double* Cr, double* Ci, double* Ar, double* Br, double* Bi, const int rA, const int cA, const int rB) {
+   int i, j, k;
+   double *ar, *br;
+   double      *bi;
+   for( j=0; j<cA; j++ ){
+      ar = Ar + j*rA;
+      br = Br + j*rB;
+      bi = Bi + j*rB;      
+      for( i=0; i<rB; i++ ){
+         for( k=0; k<rA; k++ ){
+            Cr[i*rA + k] += ar[k]*br[i];
+            Ci[i*rA + k] += ar[k]*bi[i];
+         }
+      }
+   }
+}
+void multRtCt(double* Cr, double* Ci, double* Ar, double* Br, double* Bi, const int rA, const int cA, const int rB) {
+   int i, j, k;
+   double *br, *cr, tmpr;  
+   double *bi, *ci;  
+   for( i=0; i<cA; i++ ){
+      cr   = Cr + i;
+      ci   = Ci + i;
+      for( k=0; k<rA; k++ ){
+         tmpr = Ar[i*rA+k];
+         br   = Br + k*rB;
+         bi   = Bi + k*rB;
+         for( j=0; j<rB; j++ ){
+            cr[j*cA] += tmpr * br[j];
+            ci[j*cA] += tmpr * bi[j];
+         }
+      }
+   }
+}
+// ========================================================================
+// straightforward implementations of matrix multiply Real times Real
+// ========================================================================
+void multRR(double* Cr, double* Ar, double* Br, const int rA, const int cA, const int cB) {
+   int i, j, k;
+   double *ar,*cr,tmpr;
+   for( i=0; i<cB; i++ ){
+      cr   = Cr + i*rA;
+      for( k=0; k<cA; k++ ){
+         tmpr = Br[i*cA+k];
+         ar   = Ar + k*rA;
+         for( j=0; j<rA; j++ ){
+            cr[j] += tmpr * ar[j];
+         }
+      }
+   }   
+}
+void multRtR(double* Cr, double* Ar, double* Br, const int rA, const int cA, const int cB) {
+   int i, j, k;
+   double *ar, *br, *cr;  
+   for( i=0; i<cB; i++ ){
+      br = Br + i*rA;
+      for( k=0; k<cA; k++ ){
+         ar = Ar + k*rA;
+         cr = Cr + i*cA + k;
+         for( j=0; j<rA; j++ ){
+            (*cr) += ar[j]*br[j];
+         }
+      }
+   }
+}
+void multRRt(double* Cr, double* Ar, double* Br, const int rA, const int cA, const int rB) {
+   int i, j, k;
+   double *ar, *br;
+   for( j=0; j<cA; j++ ){
+      ar = Ar + j*rA;
+      br = Br + j*rB;
+      for( i=0; i<rB; i++ ){
+         for( k=0; k<rA; k++ ){
+            Cr[i*rA + k] += ar[k]*br[i];
+         }
+      }
+   }
+}
+void multRtRt(double* Cr, double* Ar, double* Br, const int rA, const int cA, const int rB) {
+   int i, j, k;
+   double *br, *cr, tmpr;  
+   for( i=0; i<cA; i++ ){
+      cr   = Cr + i;
+      for( k=0; k<rA; k++ ){
+         tmpr = Ar[i*rA+k];
+         br   = Br + k*rB;
+         for( j=0; j<rB; j++ ){
+            cr[j*cA] += tmpr * br[j];
+         }
+      }
+   }
+}
+
 
 void scl(double* res, const double* vec, double scl, int n)
 {
-	int i;
+   int i;
    for( i=0; i<n; i++ )
       res[i] += vec[i] * scl;
 }
@@ -40,50 +305,10 @@ void multABs(double* C, double* A, double* B, const int a1, const int a2, const 
 
 
 double dot(const double* vec1, const double* vec2, const int n){
-	int i;
-	double res = 0;
+   int i;
+   double res = 0;
    for( i=0; i<n; i++ ) res += vec1[i] * vec2[i];
-	return res;
-}
-
-void multAtB(double* C, double* A, double* B, const int a1, const int a2, const int b2) {
-   int i, k;
-   double *b, *c;  
-   for( i=0; i<b2; i++ ){
-      b  = B + i*a1;
-      c  = C + i*a2;
-      for( k=0; k<a2; k++ )
-         c[k] = dot(A+k*a1, b, a1);
-   }
-}
-void multABt(double* C, double* A, double* B, const int a1, const int a2, const int b1) {
-   int i, j, k;
-   double *a, *b, *c, bi;  
-   for( j=0; j<a2; j++ ){
-      a = A + j*a1;
-      b = B + j*b1;      
-      for( i=0; i<b1; i++ ){
-         c  = C+i*a1;
-         bi = b[i];
-         for( k=0; k<a1; k++ ){
-            c[k] += a[k]*bi;
-         }
-      }
-   }
-}
-void multAtBt(double* C, double* A, double* B, const int a1, const int a2, const int b1) {
-   int i, j, k;
-   double *b, *c, tmp;  
-   for( i=0; i<a2; i++ ){
-      for( k=0; k<a1; k++ ){
-         tmp = A[i*a1+k];
-         b   = B + k*b1;
-         c   = C + i;
-         for( j=0; j<b1; j++ ){
-            c[j*a2] += tmp * b[j];
-         }
-      }
-   }
+   return res;
 }
 
 // same as multAB, but exploits sparsity of A
@@ -107,19 +332,84 @@ void multAsB(double* C, double* A, double* B, const int a1, const int a2, const 
 // =============================
 // multiply:   C = op(A) * op(B)
 // =============================
-void mulMatMat(double* C, double* A, double* B,
-				   const int a1, const int a2, const int b1, const int b2, const char *mod) {
+
+void mulCC(   double* Cr, double* Ci,
+         double* Ar, double* Ai,
+         double* Br, double* Bi,
+         const int rA, const int cA, 
+         const int rB, const int cB, 
+         const char *mod) {
+//#ifndef USE_BLAS            
+   if ( (mod[0] == 'N') && (mod[1] == 'N') )
+      multCC(Cr,Ci,Ar,Ai,Br,Bi,rA, cA, cB);
+   else if ( (mod[0] == 'T') && (mod[1] == 'N') )
+      multCtC(Cr,Ci,Ar,Ai,Br,Bi,rA, cA, cB);
+   else if ( (mod[0] == 'N') && (mod[1] == 'T') )
+      multCCt(Cr,Ci,Ar,Ai,Br,Bi,rA, cA, cB);
+   else if ( (mod[0] == 'T') && (mod[1] == 'T') )
+      multCtCt(Cr,Ci,Ar,Ai,Br,Bi,rA, cA, cB);
+//#else
+   //TODO: Complex BLAs call
+//#endif   
+}
+
+void mulCR(   double* Cr, double* Ci,
+         double* Ar, double* Ai,
+         double* Br,
+         const int rA, const int cA, 
+         const int rB, const int cB, 
+         const char *mod) {
+//#ifndef USE_BLAS            
+   if ( (mod[0] == 'N') && (mod[1] == 'N') )
+      multCR(Cr,Ci,Ar,Ai,Br,rA, cA, cB);
+   else if ( (mod[0] == 'T') && (mod[1] == 'N') )
+      multCtR(Cr,Ci,Ar,Ai,Br,rA, cA, cB);
+   else if ( (mod[0] == 'N') && (mod[1] == 'T') )
+      multCRt(Cr,Ci,Ar,Ai,Br,rA, cA, cB);
+   else if ( (mod[0] == 'T') && (mod[1] == 'T') )
+      multCtRt(Cr,Ci,Ar,Ai,Br,rA, cA, cB);
+//#else
+   //TODO: Complex BLAs call
+//#endif               
+}
+
+void mulRC(   double* Cr, double* Ci,
+         double* Ar,
+         double* Br, double* Bi,
+         const int rA, const int cA, 
+         const int rB, const int cB, 
+         const char *mod) {
+//#ifndef USE_BLAS            
+   if ( (mod[0] == 'N') && (mod[1] == 'N') )
+      multRC(Cr,Ci,Ar,Br,Bi,rA, cA, cB);
+   else if ( (mod[0] == 'T') && (mod[1] == 'N') )
+      multRtC(Cr,Ci,Ar,Br,Bi,rA, cA, cB);
+   else if ( (mod[0] == 'N') && (mod[1] == 'T') )
+      multRCt(Cr,Ci,Ar,Br,Bi,rA, cA, cB);
+   else if ( (mod[0] == 'T') && (mod[1] == 'T') )
+      multRtCt(Cr,Ci,Ar,Br,Bi,rA, cA, cB);
+//#else
+   //TODO: Complex BLAs call
+//#endif      
+}
+
+void mulRR(   double* C, 
+         double* A, 
+         double* B,
+         const int a1, const int a2, 
+         const int b1, const int b2, 
+         const char *mod) {
 #ifndef USE_BLAS // naive C implementations, including "half-sparse"
 
    if ((mod[0] != 'S') && (mod[1] != 'S')){
       if ( (mod[0] == 'N') && (mod[1] == 'N') )
-         multAB(C, A, B,a1, a2, b2);
+         multRR(C, A, B,a1, a2, b2);
       else if ( (mod[0] == 'T') && (mod[1] == 'N') )
-         multAtB(C, A, B, a1, a2, b2);
+         multRtR(C, A, B, a1, a2, b2);
       else if ( (mod[0] == 'N') && (mod[1] == 'T') )
-         multABt(C, A, B, a1, a2, b1);
+         multRRt(C, A, B, a1, a2, b1);
       else if ( (mod[0] == 'T') && (mod[1] == 'T') )
-         multAtBt(C, A, B, a1, a2, b1);
+         multRtRt(C, A, B, a1, a2, b1);
    } else {  
       if (mod[0] == 'S')
          multAsB(C, A, B, a1, a2, b2);
@@ -166,8 +456,40 @@ void mulMatMat(double* C, double* A, double* B,
 // ================================================
 // square:   C = A * op(A)  or  C = 0.5*(A*B'+B*A')
 // ================================================
-void squareMatMat(double* C, double* A, double* B,
-				   const int a1, const int a2, const int b1, const int b2, const char *mod) {
+void squareCC(   double* Creal, double* Cimag, 
+            double* Areal, double* Aimag, 
+            double* Breal, double* Bimag, 
+            const int a1, const int a2, 
+            const int b1, const int b2, 
+            const char *mod) {
+               
+            }
+            
+void squareCR(   double* Creal, double* Cimag, 
+            double* Areal, double* Aimag, 
+            double* Breal,
+            const int a1, const int a2, 
+            const int b1, const int b2, 
+            const char *mod) {
+               
+            }
+            
+void squareRC(   double* Creal, double* Cimag, 
+            double* Areal, 
+            double* Breal, double* Bimag, 
+            const int a1, const int a2, 
+            const int b1, const int b2, 
+            const char *mod) {
+               
+            }
+
+
+void squareRR(   double* C, 
+            double* A, 
+            double* B,
+            const int a1, const int a2, 
+            const int b1, const int b2, 
+            const char *mod) {
    // can't pass consts to BLAS
    ptrdiff_t a10 = a1, a20 = a2, b10 = b1; 
    // rows(Op(A)), columns(Op(A)), columns(Op(B)), rows(C)
@@ -186,14 +508,14 @@ void squareMatMat(double* C, double* A, double* B,
 
    if ((b1 == 0) || (b2 == 0)){  // one input  C = A*A'   
       if ( (mod[0] == 'N') )
-         multABt(C, A, A, a1, a2, a1);
+         multRRt(C, A, A, a1, a2, a1);
       else
-         multAtB(C, A, A, a1, a2, a2);
+         multRtR(C, A, A, a1, a2, a2);
    }else{
       if ( (mod[0] == 'N') )
-         multABt(C, A, B, a1, a2, b1);
+         multRRt(C, A, B, a1, a2, b1);
       else
-         multAtB(C, A, B, a1, a2, b2);
+         multRtR(C, A, B, a1, a2, b2);
 
       double temp;
       // symmetrize
@@ -226,8 +548,8 @@ void squareMatMat(double* C, double* A, double* B,
 // =====================================
 int cholA(double* A, double* scratch, const int n)
 {
-	int i, j, rank=0;
-	double tmp;
+   int i, j, rank=0;
+   double tmp;
 
    // in-place Cholesky factorization, store 1/L(j,j) in scratch
    for( j=0; j<n; j++ )
@@ -256,12 +578,12 @@ int cholA(double* A, double* scratch, const int n)
    for( j=0; j<n; j++ )
       A[j*n+j] = 1./scratch[j];
 
-	return rank;
+   return rank;
 }
 
 
 
-void chol(double* C, double* A,  const int a1) {
+void cholR(double* C, double* A,  const int a1) {
    int i,j;
 
    // copy upper triangle into C
@@ -285,12 +607,21 @@ void chol(double* C, double* A,  const int a1) {
 #endif
 }
 
+void cholC(   double* Creal, double* Cimag,
+         double* Areal, double* Aimag,
+         const int a1) {
+   
+}
+
 
 // ================================
 // solve linear equations   C = A\B
 // ================================
-void solve(double* C, double* A, double* B,
-				   const int a1, const int a2, const int b1, const int b2, 
+void solveRR(   double* C, 
+            double* A, 
+            double* B,
+            const int a1, const int a2, 
+            const int b1, const int b2, 
                const char *mod, double *W, const int LW, ptrdiff_t *S) {
 #ifdef USE_BLAS
    int i, j, rank;
@@ -323,4 +654,28 @@ void solve(double* C, double* A, double* B,
          }
    }
 #endif
+}
+
+void solveCR(   double* Creal, double* Cimag, 
+            double* Areal, double* Aimag, 
+            double* Breal,
+            const int a1, const int a2, 
+            const int b1, const int b2, 
+            const char *mod, double *W, const int LW, ptrdiff_t *S) {
+}
+
+void solveRC(   double* Creal, double* Cimag, 
+            double* Areal,
+            double* Breal, double* Bimag,
+            const int a1, const int a2, 
+            const int b1, const int b2, 
+            const char *mod, double *W, const int LW, ptrdiff_t *S) {
+}
+
+void solveCC(   double* Creal, double* Cimag, 
+            double* Areal, double* Aimag, 
+            double* Breal, double* Bimag,
+            const int a1, const int a2, 
+            const int b1, const int b2, 
+            const char *mod, double *W, const int LW, ptrdiff_t *S) {
 }
