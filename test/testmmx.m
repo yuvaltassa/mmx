@@ -94,17 +94,17 @@ classdef testmmx < matlab.unittest.TestCase
             testCase.verifyEqual(C,Ctest,'AbsTol',1e-15);
         end
         %%
-%         function test_bslash(testCase,F,dim_inner,dim_outer_1,dim_outer_2)
-%             Asize = [dim_inner dim_outer_1 F];
-%             Bsize = [dim_inner dim_outer_2 F];
-%             A = rand(Asize);
-%             B = rand(Bsize);
-%             C = mmx('B',A,B);
-%             Ctest = zeros(dim_outer_1,dim_outer_2,F);
-%             for ff=1:F
-%                 Ctest(:,:,ff) = A(:,:,ff)\B(:,:,ff);
-%             end
-%             testCase.verifyEqual(C,Ctest,'AbsTol',1e-15);
-%         end
+        function test_bslash(testCase,F,dim_inner)
+            Asize = [dim_inner dim_inner F];
+            Bsize = [dim_inner 1 F];
+            A = rand(Asize);
+            B = rand(Bsize);
+            C = mmx('B',A,B);
+            Ctest = zeros(dim_inner,1,F);
+            for ff=1:F
+                Ctest(:,:,ff) = A(:,:,ff)\B(:,:,ff);
+            end
+            testCase.verifyEqual(C,Ctest,'AbsTol',1e-12);
+        end
     end
 end
