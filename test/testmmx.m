@@ -84,7 +84,7 @@ classdef testmmx < matlab.unittest.TestCase
             Asize = [dim_outer_1 dim_outer_1 F];
             A = rand(Asize);
             for ff=1:F
-                A(:,:,ff) = A(:,:,ff)+(A(:,:,ff).');
+                A(:,:,ff) = A(:,:,ff)*(A(:,:,ff)');
             end
             C = mmx('C',A,[]);
             Ctest = zeros(size(A,1),size(A,1),F);
